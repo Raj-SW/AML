@@ -1,4 +1,4 @@
-.title_name{
+.title_name {
     margin: 1.5rem;
     margin-top: 2rem;
     color: #00171F;
@@ -6,17 +6,24 @@
     font-size: 30px;
 }
 
-.overview_table{
+.overview_table {
     margin: 1.5rem;
     margin-top: 0.5rem;
 }
 
-#container_list{
+#container_list {
     margin: 1.5rem;
-    margin-top: 0.5rem;
+    margin-top: 0.1rem;
 }
 
-.btn_filterbtn{
+.btn_filterbtn {
     margin: 1.5rem;
-    margin-top: 2rem;
+    margin-top: 0rem;
+    text-decoration: none;
+    border: none;
+    background-color: transparent;
+    font-size: 18px;
+    font-weight: 100;
+    color: #002855;
 }
+

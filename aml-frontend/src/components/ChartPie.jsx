@@ -18,7 +18,9 @@ const CustomLabel = ({ viewBox, value }) => {
         className="recharts-text recharts-label"
         textAnchor="middle"
         dominantBaseline="middle"
-        fontSize="15"
+        fontSize="32"
+        color="#002855"
+        fontWeight={'800'}
       >
         {`${value}%`}
       </text>
@@ -26,19 +28,19 @@ const CustomLabel = ({ viewBox, value }) => {
   );
 };
 
-function PieChart({ data, colors, innerRadius, outerRadius }) {
+function ChartPie({ data, colors, innerRadius, outerRadius }) {
   const total = data.reduce((total, item) => total + item.value, 0);
 
-  const activePercentage = ((data[0].value / total) * 100).toFixed(2);
+  const activePercentage = ((data[0].value / total) * 100).toFixed(0);
 
   return (
-    <ResponsiveContainer width="100%" height={420}>
+    <ResponsiveContainer width="100%" height={230}>
       <PieChart>
         <Pie
           data={data}
           dataKey="value"
           cx="50%"
-          cy="50%"
+          cy="45%"
           innerRadius={innerRadius}
           outerRadius={outerRadius}
           startAngle={90}
@@ -57,4 +59,4 @@ function PieChart({ data, colors, innerRadius, outerRadius }) {
   );
 }
 
-export default PieChart;
+export default ChartPie;

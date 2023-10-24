@@ -9,7 +9,10 @@ function App() {
     <div>
       <Navbar/>
       <Overview />
+
+      {/* <div className='footer'></div> */}
     </div>
+  
   );
 }
 

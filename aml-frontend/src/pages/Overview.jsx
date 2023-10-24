@@ -17,19 +17,25 @@ function Overview() {
 
 
             <div className="row" id='container_list'>
-                <OverviewAPIContainer/>
+                <OverviewAPIContainer />
             </div>
 
 
             <div className="row">
-                <div className="col">
-                    <button className="btn_filterbtn">Filter</button>
+                <div className="col d-flex justify-content-end">
+                    <button className="btn_filterbtn">
+                        <img src="https://i.ibb.co/QQNg4mg/Group-11.png" alt="Filter Icon" /> Filter
+                    </button>
                 </div>
             </div>
 
+
+
             <div className='overview_table'>
-                <OverviewTable/>
+                <OverviewTable />
             </div>
+
+
 
         </div>
     );

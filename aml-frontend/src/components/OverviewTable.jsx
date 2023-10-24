@@ -5,41 +5,46 @@ const columns = [
   {
     title: 'Integration',
     dataIndex: 'integration',
-    render: (text) => <a>{text}</a>,
+    render: (text) => <a style={{ fontSize: '17px', color: '#002855' ,fontWeight: '200',}}>{text}</a>,
   },
   {
     title: 'Status',
     dataIndex: 'status',
+    render: (text) => <a style={{ fontSize: '17px', color: '#002855' ,fontWeight: '200',}}>{text}</a>,
   },
   {
     title: 'Uptime',
     dataIndex: 'uptime',
+    render: (text) => <a style={{ fontSize: '17px', color: '#002855' ,fontWeight: '200',}}>{text}</a>,
   },
   {
     title: 'Requests',
     dataIndex: 'requests',
+    render: (text) => <a style={{ fontSize: '17px', color: '#002855' ,fontWeight: '200',}}>{text}</a>,
   },
   {
     title: 'Efficiency',
     dataIndex: 'efficiency',
+    render: (text) => <a style={{ fontSize: '17px', color: '#002855' ,fontWeight: '200',}}>{text}</a>,
   },
   {
     title: 'Flags',
     dataIndex: 'flags',
+    render: (text) => <a style={{ fontSize: '17px', color: '#002855' ,fontWeight: '200',}}>{text}</a>,
   },
   {
     title: null,
     dataIndex: 'null',
     render: (text, record) => (
-      <a href="#" onClick={() => handleImageClick(record.key)}>
+      <a href="/#">
         <img
-          src="https://www.svgrepo.com/show/124304/three-dots.svg"
+          src="https://i.ibb.co/tY7MTNq/pepicons-pop-dots-x.png"
           alt="Click Me"
-          style={{ width: '24px', height: '24px' }} 
+          style={{ width: '28px', height: '28px' }}
         />
       </a>
     ),
-  },
+    },
 ];
 
 const data = [
@@ -73,20 +78,51 @@ const data = [
     flags: 4450,
     null: 'image_placeholder',
   },
+  {
+    key: '4',
+    integration: 'AML Risk Scoring',
+    status: 'Online',
+    uptime: '85%',
+    requests: '102K',
+    efficiency: '12%',
+    flags: 4450,
+    null: 'image_placeholder',
+  },
+  {
+    key: '5',
+    integration: 'AML Risk Scoring',
+    status: 'Online',
+    uptime: '85%',
+    requests: '102K',
+    efficiency: '12%',
+    flags: 4450,
+    null: 'image_placeholder',
+  },
 ];
 
 const OverviewTable = () => {
-//   const handleImageClick = (key) => {
-//     
-//   };
-
   return (
-    <div style={{ zIndex: '0', maxHeight: '300px', overflowY: 'scroll' }}>
+    <div
+      style={{
+        zIndex: '0',
+        maxHeight: '300px',
+        overflowY: 'scroll',
+        border: '1px solid #e0e0e0',
+        borderRadius: '10px',
+      }}
+    >
       <Table
         rowSelection={{
           type: 'checkbox',
         }}
-        columns={columns}
+        columns={columns.map((column) => ({
+          ...column,
+          title: (
+            <span style={{ color: '#002855', fontWeight: '600', fontSize: '18px', textAlign: 'center' }}>
+              {column.title}
+            </span>
+          ),
+        }))}
         dataSource={data}
         pagination={false}
       />
