@@ -1,0 +1,152 @@
+[
+  {
+    "account_number": "409000611074",
+    "user_id": "1001",
+    "name": "Raj Seetohul",
+    "dob": "1990-05-15",
+    "address": "123 Main Street, Cityville, Country",
+    "docs": {
+      "nic": "1234567890",
+      "passport": "ABC123XYZ",
+      "driving_license": "DL987654"
+    },
+    "risk-score": "0",
+    "risk-value": "100000",
+    "face_image_path": "https://media.licdn.com/dms/image/D4D03AQGV_EeRLLBTNw/profile-displayphoto-shrink_800_800/0/1680368766572?e=2147483647&v=beta&t=IMdSMJ-kd8J8QZkjMKLmXZ_gaZep0IA2dPHHd9opQII"
+  },
+  {
+    "account_number": "409000493201",
+    "user_id": "1002",
+    "name": "kavish Mojhoa",
+    "dob": "1985-08-22",
+    "address": "456 Oak Avenue, Townsville, Country",
+    "docs": {
+      "nic": "0987654321",
+      "passport": "XYZ456ABC",
+      "driving_license": "DL123456"
+    },
+    "risk-score": "0",
+    "risk-value": "50000",
+    "face_image_path": "https://media.licdn.com/dms/image/D5603AQFUdBEoOr0TYw/profile-displayphoto-shrink_800_800/0/1683227440776?e=2147483647&v=beta&t=GAMl8mBOLqI7mRv-rdLFaY0kwpnqVyVPGh6WtFehFEY"
+  },
+  {
+    "account_number": "409000425051",
+    "user_id": "1003",
+    "name": "Rabill Madarboccus",
+    "dob": "1985-08-22",
+    "address": "456 Oak Avenue, Townsville, Country",
+    "docs": {
+      "nic": "0987654321",
+      "passport": "XYZ456ABC",
+      "driving_license": "DL123456"
+    },
+    "risk-score": "0",
+    "risk-value": "200000",
+    "face_image_path": "https://media.licdn.com/dms/image/C4D03AQFyCeq_Rbn6iA/profile-displayphoto-shrink_800_800/0/1574271037601?e=2147483647&v=beta&t=MNjV06pJT9NeVciDPtiL2SlfGR1NJB0cC8dniKy4JZc"
+  },
+  {
+    "account_number": "409000405747",
+    "user_id": "1004",
+    "name": "Pravesh Gowreea",
+    "dob": "1985-08-22",
+    "address": "456 Oak Avenue, Townsville, Country",
+    "docs": {
+      "nic": "0987654321",
+      "passport": "XYZ456ABC",
+      "driving_license": "DL123456"
+    },
+    "risk-score": "0",
+    "risk-value": "125000",
+    "face_image_path": "https://media.licdn.com/dms/image/C4D03AQFyCeq_Rbn6iA/profile-displayphoto-shrink_800_800/0/1574271037601?e=2147483647&v=beta&t=MNjV06pJT9NeVciDPtiL2SlfGR1NJB0cC8dniKy4JZc"
+  },
+  {
+    "account_number": "409000438611",
+    "user_id": "1005",
+    "name": "Chavi Surajbali",
+    "dob": "1985-08-22",
+    "address": "456 Oak Avenue, Townsville, Country",
+    "docs": {
+      "nic": "0987654321",
+      "passport": "XYZ456ABC",
+      "driving_license": "DL123456"
+    },
+    "risk-score": "0",
+    "risk-value": "60000",
+    "face_image_path": "https://media.licdn.com/dms/image/C4D03AQFyCeq_Rbn6iA/profile-displayphoto-shrink_800_800/0/1574271037601?e=2147483647&v=beta&t=MNjV06pJT9NeVciDPtiL2SlfGR1NJB0cC8dniKy4JZc"
+  },
+  {
+    "account_number": "409000493210",
+    "user_id": "1006",
+    "name": "John Doe",
+    "dob": "1985-08-22",
+    "address": "456 Oak Avenue, Townsville, Country",
+    "docs": {
+      "nic": "0987654321",
+      "passport": "XYZ456ABC",
+      "driving_license": "DL123456"
+    },
+    "risk-score": "0",
+    "risk-value": "100000",
+    "face_image_path": "https://media.licdn.com/dms/image/C4D03AQFyCeq_Rbn6iA/profile-displayphoto-shrink_800_800/0/1574271037601?e=2147483647&v=beta&t=MNjV06pJT9NeVciDPtiL2SlfGR1NJB0cC8dniKy4JZc"
+  },
+  {
+    "account_number": "409000438620",
+    "user_id": "1007",
+    "name": "Ashfaaq Jowaheer",
+    "dob": "1985-08-22",
+    "address": "456 Oak Avenue, Townsville, Country",
+    "docs": {
+      "nic": "0987654321",
+      "passport": "XYZ456ABC",
+      "driving_license": "DL123456"
+    },
+    "risk-score": "0",
+    "risk-value": "100000",
+    "face_image_path": "https://media.licdn.com/dms/image/C4D03AQFyCeq_Rbn6iA/profile-displayphoto-shrink_800_800/0/1574271037601?e=2147483647&v=beta&t=MNjV06pJT9NeVciDPtiL2SlfGR1NJB0cC8dniKy4JZc"
+  },
+  {
+    "account_number": "1196711",
+    "user_id": "1008",
+    "name": "Maria Debonaire",
+    "dob": "1985-08-22",
+    "address": "456 Oak Avenue, Townsville, Country",
+    "docs": {
+      "nic": "0987654321",
+      "passport": "XYZ456ABC",
+      "driving_license": "DL123456"
+    },
+    "risk-score": "0",
+    "risk-value": "50000",
+    "face_image_path": "https://media.licdn.com/dms/image/C4D03AQFyCeq_Rbn6iA/profile-displayphoto-shrink_800_800/0/1574271037601?e=2147483647&v=beta&t=MNjV06pJT9NeVciDPtiL2SlfGR1NJB0cC8dniKy4JZc"
+  },
+  {
+    "account_number": "1196428",
+    "user_id": "1009",
+    "name": "Alexis sanchez",
+    "dob": "1985-08-22",
+    "address": "456 Oak Avenue, Townsville, Country",
+    "docs": {
+      "nic": "0987654321",
+      "passport": "XYZ456ABC",
+      "driving_license": "DL123456"
+    },
+    "risk-score": "0",
+    "risk-value": "70000",
+    "face_image_path": "https://media.licdn.com/dms/image/C4D03AQFyCeq_Rbn6iA/profile-displayphoto-shrink_800_800/0/1574271037601?e=2147483647&v=beta&t=MNjV06pJT9NeVciDPtiL2SlfGR1NJB0cC8dniKy4JZc"
+  },
+  {
+    "account_number": "409000362497",
+    "user_id": "1010",
+    "name": "Erling Halaand",
+    "dob": "1985-08-22",
+    "address": "456 Oak Avenue, Townsville, Country",
+    "docs": {
+      "nic": "0987654321",
+      "passport": "XYZ456ABC",
+      "driving_license": "DL123456"
+    },
+    "risk-score": "0",
+    "risk-value": "300000",
+    "face_image_path": "https://media.licdn.com/dms/image/C4D03AQFyCeq_Rbn6iA/profile-displayphoto-shrink_800_800/0/1574271037601?e=2147483647&v=beta&t=MNjV06pJT9NeVciDPtiL2SlfGR1NJB0cC8dniKy4JZc"
+  }
+]
