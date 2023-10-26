@@ -103,7 +103,7 @@ def get_integrations():
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM Integrations")
         results = cursor.fetchall()
-        print(results)
+        # print(results)
 
         # Convert query results to a list of dictionaries
         integration_list = []
@@ -111,10 +111,10 @@ def get_integrations():
             int = {
                 "integration": row[1],
                 "status": row[2],
-                # "uptime": row.uptime,
-                # "requests": row.requests,
+                "uptime": row[4],
+                "requests": row[5],
                 "efficiency": row[3],
-                # "flags": row.flags
+                "flags": row[6]
             }
             integration_list.append(int)
 
