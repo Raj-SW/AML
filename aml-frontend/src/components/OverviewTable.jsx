@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, Input, Space, Table } from "antd";
 
-const OverviewTable = ({ columns, data }) => {
+const MyTable = ({ columns, data }) => {
   
   return (
     <div
@@ -39,4 +39,4 @@ const OverviewTable = ({ columns, data }) => {
   );
 };
 
-export default OverviewTable;
+export default MyTable;
