@@ -384,16 +384,22 @@ def apiservice():
         cursor = connection.cursor()
         try:
             cursor.execute(
-                "SELECT * FROM UserIntegration WHERE Id =?", apikey)
+                "SELECT config FROM UserIntegration WHERE Id =?", apikey)
             result = cursor.fetchone()
             print(result)
-            connection.commit()  
+            connection.commit()
+            config = result[0]  # Assuming config is the first column in the result
+            
+            configJson = json.loads(config, strict=False)
+            print(configJson)
+            
+            # print(configJSON)
         except Exception as e:
             connection.rollback() 
             print(f"Error: {str(e)}")
-            return jsonify({'Error': str(e)}), 500
+            return jsonify({'Error': str(e), 'Result': 'The API ran into an Error!'}), 500
     
-        return jsonify({'Message': 'Published'}), 200
+        return jsonify({'Message': 'Success', 'config': configJson}), 200
 
     except Exception as e:
         return jsonify({'Error': str(e)}), 500
