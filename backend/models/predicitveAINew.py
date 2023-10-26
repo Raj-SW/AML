@@ -1,11 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# Predict User Behavior
-
-# In[3]:
-
-
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import LabelEncoder
@@ -33,17 +25,17 @@ def predict_user_behavior(json_file_path, predicted_days):
     df['DATE'] = pd.to_datetime(df['DATE']).apply(lambda x: x.timestamp())
 
     # Feature selection for training
-    training_features = ['WITHDRAWAL AMT', 'DEPOSIT AMT', 'CHQ.NO.']
+    training_features = ['WITHDRAWAL_AMT', 'DEPOSIT_AMT', 'CHQ_NO']
 
     label_encoder = LabelEncoder()
-    df['user_behavior'] = label_encoder.fit_transform(df['user_behavior'])
+    df['user_behaviour'] = label_encoder.fit_transform(df['user_behaviour'])
 
     # Replace missing values with the mean for numerical features
     df[training_features] = df[training_features].fillna(df[training_features].mean())
 
     # Split the data into training and testing sets
     X_train, X_test, y_train, y_test = train_test_split(
-        df[training_features], df['user_behavior'], test_size=0.2, random_state=42
+        df[training_features], df['user_behaviour'], test_size=0.2, random_state=42
     )
 
     # remove noise into the training labels (adjust the percentage as needed)
@@ -62,12 +54,12 @@ def predict_user_behavior(json_file_path, predicted_days):
     y_pred = model.predict(X_test)
     test_accuracy = accuracy_score(y_test, y_pred)
 
-
+    list = []
     # Output predictions
-    for account_number in df['Account No'].unique():
+    for account_number in df['Account_No'].unique():
         fallBack = random.uniform(10000, 200000)
         # Filter data for the current account number
-        account_data = df[df['Account No'] == account_number]
+        account_data = df[df['Account_No'] == account_number]
 
         # Check if there are transactions for the account
         if not account_data.empty:
@@ -92,13 +84,13 @@ def predict_user_behavior(json_file_path, predicted_days):
             else:
                 ## Assuming Cheque cheque amount is not provided, set to a small non-zero value
                 if predicted_action in training_features:
-                    relevant_transactions = account_data[account_data[predicted_action] != 'CHQ.NO.']
+                    relevant_transactions = account_data[account_data[predicted_action] != 'CHQ_NO']
                 else:
-                    relevant_transactions = account_data[account_data['user_behavior'] == label_encoder.transform([predicted_action])[0]]
+                    relevant_transactions = account_data[account_data['user_behaviour'] == label_encoder.transform([predicted_action])[0]]
 
 
                 if not relevant_transactions.empty:
-                    predicted_amounts = relevant_transactions["DEPOSIT AMT" if predicted_action == "Deposit" else "WITHDRAWAL AMT"]
+                    predicted_amounts = relevant_transactions["DEPOSIT_AMT" if predicted_action == "Deposit" else "WITHDRAWAL_AMT"]
                     predicted_amount = predicted_amounts.sample().iloc[0] if not predicted_amounts.empty else 0.01
                 else:
                     predicted_amount = fallBack
@@ -109,22 +101,12 @@ def predict_user_behavior(json_file_path, predicted_days):
             # Predicted Date based on the given parameter
             predicted_date = pd.to_datetime(pd.Timestamp.now(), unit="s") + datetime.timedelta(days=predicted_days)
 
-            print(f'Account Number: {account_number}')
-            print(f'Predicted Action: {predicted_action}')
-            print(f'Predicted Date: {predicted_date}')
-            #convert amount to dollar based on trained dataset
-            print(f'Predicted Amount: {predicted_amount/45}')
-            print('-' * 20)
+            # print()    
+            list.append({
+                "account_number": str(account_number),
+                "action": str(predicted_action),
+                "date": str(predicted_date),
+                "predicted_amount": str(predicted_amount/45),
+            })
 
-# Example usage:
-predict_user_behavior("transaction.json", predicted_days=5)
-
-#print(f'Cross-Validation Accuracy: {scores.mean():.2f}')
-#print(f'Test Set Accuracy: {test_accuracy:.2f}')
-
-
-# In[ ]:
-
-
-
-
+    return(list)

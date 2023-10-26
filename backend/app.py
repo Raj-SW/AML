@@ -1,9 +1,9 @@
 import json
 from flask import Flask, jsonify, make_response, request, render_template, session, flash
 import pyodbc
-from models.predict_user_behaviour import *
+# from models.predict_user_behaviour import *
 # from API.Test.test import sayHelloWorld
-from models.predict_user_behaviour import predict_user_behavior
+from models.predicitveAINew import *
 import os
 from flask_cors import CORS
 app = Flask(__name__)
@@ -301,8 +301,8 @@ def populateTransactions():
             print(record)
             
             try:
-                cursor.execute("INSERT INTO Transactions (AccountNo, Date, TransactionDetails, ChqNo, ValueDate, WithdrawalAmt, DepositAmt, BalanceAmt, isFraud) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                            (record["Account_No"], record["DATE"], record["TRANSACTION_DETAILS"], record["CHQ_NO"], record["VALUE_DATE"], record["WITHDRAWAL_AMT"], record["DEPOSIT_AMT"], record["BALANCE_AMT"], record["isFraud"]))
+                cursor.execute("INSERT INTO Transactions (AccountNo, Date, TransactionDetails, ChqNo, ValueDate, WithdrawalAmt, DepositAmt, BalanceAmt, isFraud, user_behaviour) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                            (record["Account_No"], record["DATE"], record["TRANSACTION_DETAILS"], record["CHQ_NO"], record["VALUE_DATE"], record["WITHDRAWAL_AMT"], record["DEPOSIT_AMT"], record["BALANCE_AMT"], record["isFraud"], record["user_behaviour"]))
                 connection.commit()  # Commit the transaction
             except Exception as e:
                 connection.rollback()  # Rollback the transaction in case of an error
@@ -371,6 +371,55 @@ def set_integrations():
 
     except Exception as e:
         return jsonify({'Error': str(e)}), 500
+    
+    
+# users by clientIntegrations endpoint
+@app.route('/behaviour/<int:days>', methods=['GET'])
+def get_behaviour(days):
+    # predict_user_behavior(data, predicted_days=5)
+    try:
+        connection = connect_to_sql_server()
+        cursor = connection.cursor()
+
+        # Select a specific integration by ID
+        cursor.execute(
+            "SELECT * FROM Transactions")
+        result = cursor.fetchall()
+
+        if result:
+            data_list = []
+            for row in result:
+                data_list.append({
+                    'Account_No': row[1],
+                    'DATE': row[2],
+                    'TRANSACTION_DETAILS': row[3],
+                    'CHQ_NO': row[4],
+                    'VALUE_DATE': row[5],
+                    'WITHDRAWAL_AMT': row[6],
+                    'DEPOSIT_AMT': row[7],
+                    'BALANCE_AMT': row[8],
+                    'isFraud': row[9],
+                    'user_behaviour': row[10],
+                })
+
+            output_file_path = "transaction_database.json"
+
+            # Export the JSON array to a JSON file
+            with open(output_file_path, "w") as json_file:
+                json.dump(data_list, json_file, indent=4)
+
+            prediction = predict_user_behavior("transaction_database.json", predicted_days=5)
+            
+
+            return prediction
+        else:
+            return jsonify({'Error': 'User not found'}), 404
+
+    except Exception as e:
+        return jsonify({'Error': str(e)}), 500
+    
+
+
 
 @app.route('/apiservice', methods=['POST'])
 def apiservice():
