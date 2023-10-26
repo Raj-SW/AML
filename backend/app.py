@@ -2,6 +2,8 @@ import json
 from flask import Flask, jsonify, make_response, request, render_template, session, flash
 import pyodbc
 from models.predict_user_behaviour import *
+# from API.Test.test import sayHelloWorld
+from models.predict_user_behaviour import predict_user_behavior
 
 app = Flask(__name__)
 
@@ -18,12 +20,65 @@ def connect_to_sql_server():
     conn = pyodbc.connect(conn_str)
     return conn
 
+# jsonObj = [
+#     {
+#         "Account_No": "409000611074",
+#         "DATE": 1498694400000,
+#         "TRANSACTION_DETAILS": "TRF FROM  Indiaforensic SERVICES",
+#         "CHQ_NO": 'null',
+#         "VALUE_DATE": 1498694400000,
+#         "WITHDRAWAL_AMT": 'null',
+#         "DEPOSIT_AMT": 1000000.0,
+#         "BALANCE_AMT": 1000000.0,
+#         "isFraud": 'null'
+#     },
+#     {
+#         "Account_No": "409000611074",
+#         "DATE": 1499212800000,
+#         "TRANSACTION_DETAILS": "TRF FROM  Indiaforensic SERVICES",
+#         "CHQ_NO": 'null',
+#         "VALUE_DATE": 1499212800000,
+#         "WITHDRAWAL_AMT": 'null',
+#         "DEPOSIT_AMT": 1000000.0,
+#         "BALANCE_AMT": 2000000.0,
+#         "isFraud": 'null'
+#     },
+#     {
+#         "Account_No": "409000611074",
+#         "DATE": 1500336000000,
+#         "TRANSACTION_DETAILS": "FDRL/INTERNAL FUND TRANSFE",
+#         "CHQ_NO": 'null',
+#         "VALUE_DATE": 1500336000000,
+#         "WITHDRAWAL_AMT": 'null',
+#         "DEPOSIT_AMT": 500000.0,
+#         "BALANCE_AMT": 2500000.0,
+#         "isFraud": 'null'
+#     },
+#     {
+#         "Account_No": "409000611074",
+#         "DATE": 1501545600000,
+#         "TRANSACTION_DETAILS": "TRF FRM  Indiaforensic SERVICES",
+#         "CHQ_NO": 'null',
+#         "VALUE_DATE": 1501545600000,
+#         "WITHDRAWAL_AMT": 'null',
+#         "DEPOSIT_AMT": 3000000.0,
+#         "BALANCE_AMT": 5500000.0,
+#         "isFraud": 'null'
+#     }]
+
+# predict_user_behavior(jsonObj, 2)
 
 # Default route
 @app.route('/')
 def hello_world():
     return 'Backend Server live!', 200
 
+
+# integrations endpoint
+@app.route('/userBehaviour', methods=['GET'])
+def getUser():
+    print('test')
+    return jsonify({'user': 'test'}), 200
 
 # integrations endpoint
 @app.route('/integrations', methods=['GET'])
