@@ -8,7 +8,7 @@ function OverviewAPIContainer() {
 
     const data1 = [
         { name: "Active APIs", value: 7 },
-        { name: "Inactive APIs", value: 3 }
+        { name: "Inactive APIs", value: 4 }
     ];
 
     const data2 = [
