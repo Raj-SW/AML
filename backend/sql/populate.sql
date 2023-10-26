@@ -48,6 +48,7 @@ CREATE TABLE Users (
     RiskScore INT,
     RiskValue DECIMAL(18, 2),
     FaceImagePath NVARCHAR(255),
+    CreditScore INT,
     ClientId INT,
     FOREIGN KEY (ClientId) REFERENCES Clients(Id)
 );
@@ -75,7 +76,8 @@ CREATE TABLE ClientsIntegration (
     ClientId INT,
     Endpoint NVARCHAR(255),
     IntegrationId INT,
-    Params NVARCHAR(MAX)  -- JSON data will be stored as a string
+    IntegrationParam NVARCHAR(MAX), --JSON data will be stored as a string
+    Params NVARCHAR(MAX)  -- params include the output and input
 );
 
 -- Insert the JSON data into the ClientsIntegration table
@@ -83,8 +85,9 @@ INSERT INTO ClientsIntegration (ApiKey, ClientId, Endpoint, IntegrationId, Param
 VALUES (
     '1031fe96-9825-4600-a9e4-dccf11fe00ba',
     1,
-    'https://mrindustries/publish/',
+    'http://192.168.100.70:5000/',
     1,
+    '{}'
     '{}'  -- Store the JSON data
 );
 
