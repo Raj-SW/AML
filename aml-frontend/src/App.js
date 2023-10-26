@@ -8,9 +8,9 @@ function App() {
   return (
     <div>
       <Navbar />
-      {/* <Overview /> */}
+      <Overview />
       {/* <KYC /> */}
-      <TransactionMonitoring />
+      {/* <TransactionMonitoring /> */}
       {/* <div className='footer'></div> */}
     </div>
   );
