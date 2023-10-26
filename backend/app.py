@@ -372,5 +372,32 @@ def set_integrations():
     except Exception as e:
         return jsonify({'Error': str(e)}), 500
 
+@app.route('/apiservice', methods=['POST'])
+def apiservice():
+    data = json.loads(request.data, strict=False)
+    apikey = request.args.get('apikey')
+    print(apikey)
+    print(data)
+
+    try:
+        connection = connect_to_sql_server()
+        cursor = connection.cursor()
+        try:
+            cursor.execute(
+                "SELECT * FROM UserIntegration WHERE Id =?", apikey)
+            result = cursor.fetchone()
+            print(result)
+            connection.commit()  
+        except Exception as e:
+            connection.rollback() 
+            print(f"Error: {str(e)}")
+            return jsonify({'Error': str(e)}), 500
+    
+        return jsonify({'Message': 'Published'}), 200
+
+    except Exception as e:
+        return jsonify({'Error': str(e)}), 500
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
