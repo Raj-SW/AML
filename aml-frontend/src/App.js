@@ -8,8 +8,8 @@ function App() {
   return (
     <div>
       <Navbar />
-      {/* <Overview /> */}
-      <KYC />
+      <Overview />
+      {/* <KYC /> */}
       {/* <TransactionMonitoring /> */}
       {/* <div className='footer'></div> */}
     </div>
