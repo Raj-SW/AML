@@ -5,8 +5,9 @@ from models.predict_user_behaviour import *
 # from API.Test.test import sayHelloWorld
 from models.predict_user_behaviour import predict_user_behavior
 import os
-
+from flask_cors import CORS
 app = Flask(__name__)
+CORS(app)
 
 # Azure SQL Server parameters
 # server = 'pwc.database.windows.net'
@@ -15,11 +16,11 @@ app = Flask(__name__)
 # username = 'chavi'
 # password = 'Ch@v!2804'
 
-server = os.environ.get("SERVER")
-database = os.environ.get("DATABASE")
-username = os.environ.get("USERNAME")
-password = os.environ.get("PASSWORD")
-port = os.environ.get("PORT")
+server = 'pwc.database.windows.net'
+database = 'pwc'
+username = 'chavi'
+password = 'Ch@v!2804'
+port = 1433
 
 
 def connect_to_sql_server():
@@ -341,18 +342,35 @@ def populateUsers():
 
 @app.route('/integration/publish', methods=['POST'])
 def set_integrations():
+    data = json.loads(request.data, strict=False)
+    Id = data['apiKey']
+    userId = data['clientId']
+    status = 'Active'
+    apiKey = data['apiKey']
+    endpoint = data['endpoint']
+    config = json.dumps(data, indent=4)
+    uptime = 100
+    requests = 0
+    Efficiency =  100
+    Flags = 0
+
     try:
         connection = connect_to_sql_server()
         cursor = connection.cursor()
-
-        cursor.execute("INSERT INTO UserIntegration (status, apikey, endpoint, config, uptime, requests, Efficiency, Flags) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (
-            'Online','sdfdfs','sdfsdfsdf','sdfsdfs','sdfsdfs',2,3,4,5
-        ))
+        try:
+            cursor.execute("INSERT INTO UserIntegration (Id,userId, status, apikey, endpoint, config, uptime, requests, Efficiency, Flags) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (
+                    Id,userId,status,apiKey,endpoint,config,uptime,requests,Efficiency,Flags
+             ))
+            connection.commit()  
+        except Exception as e:
+            connection.rollback() 
+            print(f"Error: {str(e)}")
+            return jsonify({'Error': str(e)}), 500
+    
         return jsonify({'Message': 'Published'}), 200
 
     except Exception as e:
         return jsonify({'Error': str(e)}), 500
-
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
