@@ -125,49 +125,28 @@ def get_integrations():
 
 
 # integrations by client_id endpoint
-@app.route('/integrations/<int:client_id>', methods=['GET'])
-def get_integration(client_id):
+@app.route('/integrations/<string:api_key>', methods=['GET'])
+def get_integration(api_key):
     try:
         connection = connect_to_sql_server()
         cursor = connection.cursor()
 
         # Select a specific integration by ID
-        cursor.execute(
-            "SELECT * FROM ClientsIntegration JOIN Integrations ON ClientsIntegration.IntegrationId = Integrations.Id WHERE ClientsIntegration.ClientId =?", client_id)
-        results = cursor.fetchall()
+        cursor.execute("SELECT config FROM UserIntegration WHERE Id =?", api_key)
+        result = cursor.fetchone()
+            # print(result)
+        connection.commit()
+        config = result[0]  # Assuming config is the first column in the result
+            
+        configJson = json.loads(config, strict=False)
 
-        # print(result)
-        integration_list = []
-        tot_eff = 0
-        upAPI = 0
-        if results:
-            for row in results:
-                tot_eff += int(row[8])
-                if row[7] == "Online":
-                    upAPI += 1
+        nodes = configJson['nodes']
+        integrationId = nodes[0]["params"]["id"]
 
-                integration = {
-                    "api_key": row[0],
-                    "endpoint": row[2],
-                    "url": row[2] + row[0],
-                    "params": json.loads(row[4]),
-                    "name": row[6],
-                    "status": row[7],
-                    "efficiency": row[8]
-                }
-                integration_list.append(integration)
+        cursor.execute("SELECT * FROM Integrations WHERE Id =?", integrationId)
+        result = cursor.fetchall()
 
-            return jsonify({
-                "total_efficiency": tot_eff/len(results),
-                "apis": {
-                    "total": len(results),
-                    "active": upAPI,
-                    "down": len(results) - upAPI,
-                },
-                "integration": integration_list
-            })
-        else:
-            return jsonify({'Error': 'Integration not found'}), 404
+        return result, 200
 
     except Exception as e:
         return jsonify({'Error': str(e)}), 500
@@ -179,16 +158,18 @@ def get_users(client_id):
     try:
         connection = connect_to_sql_server()
         cursor = connection.cursor()
+        integration = ""
 
         # Select a specific integration by ID
         cursor.execute(
-            "SELECT * FROM Users WHERE ClientId =?", client_id)
+            "SELECT * FROM Users JOIN Clients ON Users.ClientId = Clients.Id WHERE Users.ClientId =?", client_id)
         results = cursor.fetchall()
 
-        # print(result)
+        print(results)
         list = []
         if results:
             for row in results:
+                integration = row[15]
                 data = {
                     "id": row[1],
                     "account_number": row[0],
@@ -204,11 +185,16 @@ def get_users(client_id):
                         "score": row[8],
                         "value": row[9],
                     },
-                    "face_image_url": row[10]
                 }
                 list.append(data)
 
-            return jsonify(list)
+            
+            return jsonify({
+                "users": list,
+                "integration": integration,
+                "prediction": get_behaviour(5)
+
+            })
         else:
             return jsonify({'Error': 'User not found'}), 404
 
@@ -255,36 +241,6 @@ def get_user(user_id):
     except Exception as e:
         return jsonify({'Error': str(e)}), 500
 
- 
-# users by clientIntegrations endpoint
-@app.route('/<string:api_key>', methods=['GET'])
-def get_users_integrations(api_key):
-    try:
-        connection = connect_to_sql_server()
-        cursor = connection.cursor()
-
-        # Select a specific integration by ID
-        cursor.execute(
-            "SELECT * FROM ClientsIntegration JOIN Integrations ON ClientsIntegration.IntegrationId = Integrations.Id WHERE ClientsIntegration.ApiKey =?", api_key)
-        result = cursor.fetchone()
-
-        print(result)
-        if result:
-            clientId = result[1]
-            users = get_users(clientId)
-            return jsonify({
-                "users": users,
-                "Integration": {
-                    "name": result.get("name", 0),
-                    "status": result.get("status", 0),
-                    "efficiency": result.get("efficiency", 0),
-                },
-            })
-        else:
-            return jsonify({'Error': 'User not found'}), 404
-
-    except Exception as e:
-        return jsonify({'Error': str(e)}), 500
 
 
 # populate transactions from json file
