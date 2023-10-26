@@ -9,8 +9,8 @@ function App() {
     <div>
       <Navbar />
       {/* <Overview /> */}
-      {/* <KYC /> */}
-      <TransactionMonitoring />
+      <KYC />
+      {/* <TransactionMonitoring /> */}
       {/* <div className='footer'></div> */}
     </div>
   );
