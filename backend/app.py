@@ -342,6 +342,12 @@ def populateUsers():
 @app.route('/integration/publish', methods=['POST'])
 def set_integrations():
     try:
+        connection = connect_to_sql_server()
+        cursor = connection.cursor()
+
+        cursor.execute("INSERT INTO UserIntegration (status, apikey, endpoint, config, uptime, requests, Efficiency, Flags) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (
+            'Online','sdfdfs','sdfsdfsdf','sdfsdfs','sdfsdfs',2,3,4,5
+        ))
         return jsonify({'Message': 'Published'}), 200
 
     except Exception as e:
