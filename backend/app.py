@@ -339,42 +339,7 @@ def populateUsers():
     except Exception as e:
         return jsonify({'Error': str(e)}), 500
 
-
-@app.route('/integration/publish', methods=['POST'])
-def set_integrations():
-    data = json.loads(request.data, strict=False)
-    Id = data['apiKey']
-    userId = data['clientId']
-    status = 'Active'
-    apiKey = data['apiKey']
-    endpoint = data['endpoint']
-    config = json.dumps(data, indent=4)
-    uptime = 100
-    requests = 0
-    Efficiency =  100
-    Flags = 0
-
-    try:
-        connection = connect_to_sql_server()
-        cursor = connection.cursor()
-        try:
-            cursor.execute("INSERT INTO UserIntegration (Id,userId, status, apikey, endpoint, config, uptime, requests, Efficiency, Flags) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (
-                    Id,userId,status,apiKey,endpoint,config,uptime,requests,Efficiency,Flags
-             ))
-            connection.commit()  
-        except Exception as e:
-            connection.rollback() 
-            print(f"Error: {str(e)}")
-            return jsonify({'Error': str(e)}), 500
-    
-        return jsonify({'Message': 'Published'}), 200
-
-    except Exception as e:
-        return jsonify({'Error': str(e)}), 500
-    
-    
-# users by clientIntegrations endpoint
-@app.route('/behaviour/<int:days>', methods=['GET'])
+# @app.route('/behaviour/<int:days>', methods=['GET'])
 def get_behaviour(days):
     # predict_user_behavior(data, predicted_days=5)
     try:
@@ -413,20 +378,53 @@ def get_behaviour(days):
 
             return prediction
         else:
-            return jsonify({'Error': 'User not found'}), 404
+            return jsonify({'Error': 'User not found'})
 
     except Exception as e:
-        return jsonify({'Error': str(e)}), 500
+        return jsonify({'Error': str(e)})
     
 
 
+@app.route('/integration/publish', methods=['POST'])
+def set_integrations():
+    data = json.loads(request.data, strict=False)
+    Id = data['apiKey']
+    name= data['IntegrationName']
+    print(name)
+    userId = data['clientId']
+    status = 'Active'
+    apiKey = data['apiKey']
+    endpoint = data['endpoint']
+    config = json.dumps(data, indent=4)
+    uptime = 100
+    requests = 0
+    Efficiency =  100
+    Flags = 0
+
+    try:
+        connection = connect_to_sql_server()
+        cursor = connection.cursor()
+        try:
+            cursor.execute("INSERT INTO UserIntegration (Id,name, userId, status, apikey, endpoint, config, uptime, requests, Efficiency, Flags) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (
+                    Id,name,userId,status,apiKey,endpoint,config,uptime,requests,Efficiency,Flags
+             ))
+            connection.commit()  
+        except Exception as e:
+            connection.rollback() 
+            print(f"Error: {str(e)}")
+            return jsonify({'Error': str(e)}), 500
+    
+        return jsonify({'Message': 'Published'}), 200
+
+    except Exception as e:
+        return jsonify({'Error': str(e)}), 500
 
 @app.route('/apiservice', methods=['POST'])
 def apiservice():
     data = json.loads(request.data, strict=False)
     apikey = request.args.get('apikey')
-    print(apikey)
-    print(data)
+    # print(apikey)
+    # print(data)
 
     try:
         connection = connect_to_sql_server()
@@ -435,14 +433,30 @@ def apiservice():
             cursor.execute(
                 "SELECT config FROM UserIntegration WHERE Id =?", apikey)
             result = cursor.fetchone()
-            print(result)
+            # print(result)
             connection.commit()
             config = result[0]  # Assuming config is the first column in the result
             
             configJson = json.loads(config, strict=False)
-            print(configJson)
-            
-            # print(configJSON)
+
+            input = configJson['input']
+            output = configJson['output']
+            nodes = configJson['nodes']
+            print(input)
+            print(output)
+            print(nodes)
+
+            if(input['type'] == 'JSON'):
+                print('Is JSON')
+                integration = nodes[0]
+                name = integration['name']
+                if(name == 'UserBehaviorAnalysis'):
+                    print('Is UserBehaviorAnalysis')
+                    duration = integration['params']['duration']
+                    result = get_behaviour(duration)
+                    return result, 200
+                
+
         except Exception as e:
             connection.rollback() 
             print(f"Error: {str(e)}")
@@ -452,6 +466,7 @@ def apiservice():
 
     except Exception as e:
         return jsonify({'Error': str(e)}), 500
+
 
 
 if __name__ == '__main__':
