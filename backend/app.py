@@ -8,11 +8,17 @@ from models.predict_user_behaviour import predict_user_behavior
 app = Flask(__name__)
 
 # Azure SQL Server parameters
-server = 'pwc.database.windows.net'
-port = 1433
-database = 'pwc'
-username = 'chavi'
-password = 'Ch@v!2804'
+# server = 'pwc.database.windows.net'
+# port = 1433
+# database = 'pwc'
+# username = 'chavi'
+# password = 'Ch@v!2804'
+
+server = os.environ.get("SERVER")
+database = os.environ.get("DATABASE")
+username = os.environ.get("USERNAME")
+password = os.environ.get("PASSWORD")
+port = os.environ.get("PORT")
 
 
 def connect_to_sql_server():
@@ -72,6 +78,12 @@ def connect_to_sql_server():
 @app.route('/')
 def hello_world():
     return 'Backend Server live!', 200
+
+# first API endpoint
+# @app.route('/userbehaviour', methods=['GET'])
+# def get_user_Behaviour():
+#     data = json.loads(request.data, strict=False)
+
 
 
 # integrations endpoint
