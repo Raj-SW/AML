@@ -4,8 +4,10 @@ import pyodbc
 # from models.predict_user_behaviour import *
 # from API.Test.test import sayHelloWorld
 from models.predicitveAINew import *
+from models.fraud_detection import *
 import os
 from flask_cors import CORS
+
 app = Flask(__name__)
 CORS(app)
 
@@ -28,54 +30,6 @@ def connect_to_sql_server():
     conn = pyodbc.connect(conn_str)
     return conn
 
-# jsonObj = [
-#     {
-#         "Account_No": "409000611074",
-#         "DATE": 1498694400000,
-#         "TRANSACTION_DETAILS": "TRF FROM  Indiaforensic SERVICES",
-#         "CHQ_NO": 'null',
-#         "VALUE_DATE": 1498694400000,
-#         "WITHDRAWAL_AMT": 'null',
-#         "DEPOSIT_AMT": 1000000.0,
-#         "BALANCE_AMT": 1000000.0,
-#         "isFraud": 'null'
-#     },
-#     {
-#         "Account_No": "409000611074",
-#         "DATE": 1499212800000,
-#         "TRANSACTION_DETAILS": "TRF FROM  Indiaforensic SERVICES",
-#         "CHQ_NO": 'null',
-#         "VALUE_DATE": 1499212800000,
-#         "WITHDRAWAL_AMT": 'null',
-#         "DEPOSIT_AMT": 1000000.0,
-#         "BALANCE_AMT": 2000000.0,
-#         "isFraud": 'null'
-#     },
-#     {
-#         "Account_No": "409000611074",
-#         "DATE": 1500336000000,
-#         "TRANSACTION_DETAILS": "FDRL/INTERNAL FUND TRANSFE",
-#         "CHQ_NO": 'null',
-#         "VALUE_DATE": 1500336000000,
-#         "WITHDRAWAL_AMT": 'null',
-#         "DEPOSIT_AMT": 500000.0,
-#         "BALANCE_AMT": 2500000.0,
-#         "isFraud": 'null'
-#     },
-#     {
-#         "Account_No": "409000611074",
-#         "DATE": 1501545600000,
-#         "TRANSACTION_DETAILS": "TRF FRM  Indiaforensic SERVICES",
-#         "CHQ_NO": 'null',
-#         "VALUE_DATE": 1501545600000,
-#         "WITHDRAWAL_AMT": 'null',
-#         "DEPOSIT_AMT": 3000000.0,
-#         "BALANCE_AMT": 5500000.0,
-#         "isFraud": 'null'
-#     }]
-
-# predict_user_behavior(jsonObj, 2)
-
 # Default route
 @app.route('/')
 def hello_world():
@@ -85,8 +39,6 @@ def hello_world():
 # @app.route('/userbehaviour', methods=['GET'])
 # def get_user_Behaviour():
 #     data = json.loads(request.data, strict=False)
-
-
 
 # integrations endpoint
 @app.route('/userBehaviour', methods=['GET'])
@@ -282,6 +234,81 @@ def populateTransactions():
     except Exception as e:
         return jsonify({'Error': str(e)}), 500
 
+# populate transactions from json file
+@app.route('/transaction/new', methods=['POST'])
+def new_transaction():
+    try:
+        connection = connect_to_sql_server()
+        cursor = connection.cursor()
+
+        data = json.loads(request.data, strict=False)
+        account_no = data['account_no']
+        date = datetime.datetime.now().timestamp()
+        valueDate = datetime.datetime.now().timestamp()
+        ChqNo = data['cheque_no']
+        TransactionDetails = data['transaction_details']
+        WithdrawalAmt = data['withdrawal_amt']
+        DepositAmt = data['deposit_amt']
+        BalanceAmt = data['balance_amt']
+        isFraud = 0
+        file_data = []
+
+        try:
+
+            with open("h5_data.json", 'r') as json_file:
+                file_data = json.load(json_file)
+
+            # Append the new object to the array
+            file_data.append({
+                "Account_No": account_no,
+                "DATE": date,
+                "TRANSACTION DETAILS": TransactionDetails,
+                "CHQ_NO": ChqNo,
+                "VALUE DATE": valueDate,
+                "WITHDRAWAL_AMT": WithdrawalAmt,
+                "DEPOSIT_AMT": DepositAmt,
+                "BALANCE_AMT": BalanceAmt,
+            })
+
+            # Write the updated data back to the JSON file
+            with open("h5_data.json", 'w') as json_file:
+                json.dump(file_data, json_file, indent=4)
+
+            try:
+                isFraud = fraud_detection("h5_data.json", "fraud_detection_model.h5")
+            except Exception as e:
+                print(f"Error: {str(e)}")
+                return jsonify({'Error': str(e)}), 500
+            
+            try:
+                cursor.execute("INSERT INTO Transactions (AccountNo, Date, TransactionDetails, ChqNo, ValueDate, WithdrawalAmt, DepositAmt, BalanceAmt, isFraud, user_behaviour) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                        (account_no, date, TransactionDetails, ChqNo, valueDate, WithdrawalAmt, DepositAmt, BalanceAmt, isFraud, "null"))
+                connection.commit()  # Commit the transaction
+
+                return {
+                "Account_No": account_no,
+                "DATE": date,
+                "TRANSACTION DETAILS": TransactionDetails,
+                "CHQ_NO": ChqNo,
+                "VALUE DATE": valueDate,
+                "WITHDRAWAL_AMT": WithdrawalAmt,
+                "DEPOSIT_AMT": DepositAmt,
+                "BALANCE_AMT": BalanceAmt,
+                "isFraud": isFraud,
+            }, 200
+            except Exception as e:
+                print(f"Error: {str(e)}")
+                return jsonify({'Error': str(e)}), 500
+            
+            
+        except Exception as e:
+            connection.rollback()  # Rollback the transaction in case of an error
+            print(f"Error: {str(e)}")
+            return jsonify({'Error': str(e)}), 500
+            
+    except Exception as e:
+        return jsonify({'Error': str(e)}), 500
+
 
 # populate users from json file
 @app.route('/user-populate', methods=['GET'])
@@ -413,16 +440,24 @@ def apiservice():
             print(input)
             print(output)
             print(nodes)
+            results = []
 
             if(input['type'] == 'JSON'):
                 print('Is JSON')
                 integration = nodes[0]
                 name = integration['name']
                 if(name == 'UserBehaviorAnalysis'):
-                    print('Is UserBehaviorAnalysis')
                     duration = integration['params']['duration']
                     result = get_behaviour(duration)
-                    return result, 200
+                    return results.append({
+                        "UserBehaviorAnalysis": result
+                    })
+                if(name == "AMLTransactionMonitoring"):
+                    result.append({
+                        "AMLTransactionMonitoring": fraud_detection("h5_data.json", "fraud_detection_model.h5")
+                    })
+                
+                return results, 200
                 
 
         except Exception as e:
@@ -434,6 +469,16 @@ def apiservice():
 
     except Exception as e:
         return jsonify({'Error': str(e)}), 500
+    
+@app.route('/predict', methods=['GET'])
+def fraud_detection_api():
+    try:
+        fraud_detection("h5_data.json", "fraud_detection_model.h5")
+
+        return {}, 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)})
 
 
 
