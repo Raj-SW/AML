@@ -149,6 +149,8 @@ def get_users(client_id):
                         "score": row[8],
                         "value": row[9],
                     },
+                    "kyc_score": row[11]
+
                 }
                 list.append(data)
 
@@ -195,7 +197,8 @@ def get_user(user_id):
                     "score": row[8],
                     "value": row[9],
                 },
-                "face_image_url": row[10]
+                "face_image_url": row[10],
+                "kyc_score": row[11]
             }
 
             return jsonify(data)
