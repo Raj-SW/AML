@@ -129,10 +129,10 @@ def get_users(client_id):
             "SELECT * FROM Users JOIN Clients ON Users.ClientId = Clients.Id WHERE Users.ClientId =?", client_id)
         results = cursor.fetchall()
 
-        print(results)
         list = []
         if results:
             for row in results:
+                print(row[11])
                 integration = row[15]
                 data = {
                     "id": row[1],
