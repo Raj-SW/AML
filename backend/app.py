@@ -97,7 +97,7 @@ def getUser():
 # integrations endpoint
 @app.route('/integrations', methods=['GET'])
 # @token_required
-def get_integrations():
+def get_integrations_service():
     try:
         connection = connect_to_sql_server()
         cursor = connection.cursor()
@@ -142,11 +142,23 @@ def get_integration(api_key):
 
         nodes = configJson['nodes']
         integrationId = nodes[0]["params"]["id"]
-
         cursor.execute("SELECT * FROM Integrations WHERE Id =?", integrationId)
+       
         result = cursor.fetchall()
+        integration_list = []
+        for row in result:
+            int = {
+                "Id": row[1],
+                "Integration": row[2],
+                "Status": row[3],
+                "Efficiency": row[4],
+                "uptime": row[5],
+                "requests": row[6],
+                "flags": row[6]
+            }
+            integration_list.append(int)
 
-        return result, 200
+        return jsonify(integration_list), 200
 
     except Exception as e:
         return jsonify({'Error': str(e)}), 500
