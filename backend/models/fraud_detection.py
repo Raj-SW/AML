@@ -92,23 +92,24 @@ def fraud_detection(json_file_path, model_file_path):
     new_data = {
         "CHQ_NO": 0,
         "WITHDRAWAL_AMT": 0,
-        "DEPOSIT_AMT": 80000,
+        "DEPOSIT_AMT": 28000,
     }
 
-    # Convert new data to DataFrame
-    new_df = pd.DataFrame([new_data])
+    last_data = data.tail(1)
+    last_data = last_data[selected_columns]
 
-    # Reorder columns to match the order during training
-    new_df = new_df[selected_columns]
-
-    # Scale the new data using the same scaler
-    new_df_scaled = scaler.transform(new_df)
+    # Scale the last data using the same scaler
+    last_data_scaled = scaler.transform(last_data)
 
     # Make predictions
-    predictions = loaded_model.predict(new_df_scaled)
+    predictions = loaded_model.predict(last_data_scaled)
 
     # Output the result
+    print("predictions[0][0]")
+    print(predictions[0][0])
     if predictions[0][0] >= 0.5:
-        return 0
-    else:
+        print("Fraudulent Transaction")
         return 1
+    else:
+        print("NOT Fraudulent Transaction")
+        return 0

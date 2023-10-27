@@ -62,5 +62,5 @@ def connect_to_sql_server():
     conn = pyodbc.connect(conn_str)
     return conn
 
-connection = connect_to_sql_server()
-print(decision_tree(connection))
+# connection = connect_to_sql_server()
+# print(decision_tree(connection))

@@ -21,7 +21,7 @@ def predict_user_behavior(data, predicted_days):
     # Convert the array of objects to a DataFrame
     df = pd.DataFrame(data)
     # print(df)
-    print(df[0])
+    # print(df[0])
 
     # return df
     # 'DATE' to timestamp
@@ -70,7 +70,7 @@ def predict_user_behavior(data, predicted_days):
 
             # Make predictions on the output features
             predictions = model.predict(X_output)
-            print(predictions)
+            # print(predictions)
             # Use the first prediction assuming the behavior is consistent for the account
             idx = account_data.index[0]
 
@@ -101,12 +101,12 @@ def predict_user_behavior(data, predicted_days):
             # Predicted Date based on the given parameter
             predicted_date = pd.to_datetime(pd.Timestamp.now()) + datetime.timedelta(days=predicted_days)
 
-            print(f'Account Number: {account_number}')
-            print(f'Predicted Action: {predicted_action}')
+            # print(f'Account Number: {account_number}')
+            # # print(f'Predicted Action: {predicted_action}')
             print(f'Predicted Date: {predicted_date}')
             # Convert amount to dollars based on trained dataset
-            print(f'Predicted Amount: {predicted_amount / 45}')
-            print('-' * 20)
+            # print(f'Predicted Amount: {predicted_amount / 45}')
+            # print('-' * 20)
 
 # Example usage:
 

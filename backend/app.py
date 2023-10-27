@@ -44,7 +44,7 @@ def hello_world():
 # integrations endpoint
 @app.route('/userBehaviour', methods=['GET'])
 def getUser():
-    print('test')
+    # print('test')
     return jsonify({'user': 'test'}), 200
 
 # integrations endpoint
@@ -89,7 +89,7 @@ def get_integration(api_key):
         result = cursor.fetchall()
             # print(result)
         connection.commit()
-        config = result[0]  # Assuming config is the first column in the result
+        config = result  # Assuming config is the first column in the result
             
         configJson = json.loads(config, strict=False)
 
@@ -133,7 +133,7 @@ def get_users(client_id):
         list = []
         if results:
             for row in results:
-                print(row[11])
+                # print(row[11])
                 integration = row[15]
                 data = {
                     "id": row[1],
@@ -222,7 +222,7 @@ def populateTransactions():
             data = json.load(json_file)
 
         for record in data:
-            print(record)
+            # print(record)
             
             try:
                 cursor.execute("INSERT INTO Transactions (AccountNo, Date, TransactionDetails, ChqNo, ValueDate, WithdrawalAmt, DepositAmt, BalanceAmt, isFraud, user_behaviour) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
@@ -230,7 +230,7 @@ def populateTransactions():
                 connection.commit()  # Commit the transaction
             except Exception as e:
                 connection.rollback()  # Rollback the transaction in case of an error
-                print(f"Error: {str(e)}")
+                # print(f"Error: {str(e)}")
                 return jsonify({'Error': str(e)}), 500
             
         return jsonify({'Message': 'Transactions Created'}), 200
@@ -255,6 +255,7 @@ def new_transaction():
         DepositAmt = data['deposit_amt']
         BalanceAmt = data['balance_amt']
         isFraud = 0
+        risk_level = "null"
         file_data = []
 
         try:
@@ -280,36 +281,88 @@ def new_transaction():
 
             try:
                 isFraud = fraud_detection("h5_data.json", "fraud_detection_model.h5")
+                print("isFraud")
+                print(isFraud)
             except Exception as e:
-                print(f"Error: {str(e)}")
+                # print(f"Error: {str(e)}")
                 return jsonify({'Error': str(e)}), 500
             
             try:
-                cursor.execute("INSERT INTO Transactions (AccountNo, Date, TransactionDetails, ChqNo, ValueDate, WithdrawalAmt, DepositAmt, BalanceAmt, isFraud, user_behaviour) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                        (account_no, date, TransactionDetails, ChqNo, valueDate, WithdrawalAmt, DepositAmt, BalanceAmt, isFraud, "null"))
+                if isFraud == 1:
+                    risk_level = decision_tree(connection)
+                    print("risk_level")
+                    print(risk_level)
+            except Exception as e:
+                # print(f"Error: {str(e)}")
+                return jsonify({'Error': str(e)}), 500
+            
+            try:
+                cursor.execute("INSERT INTO Transactions (AccountNo, Date, TransactionDetails, ChqNo, ValueDate, WithdrawalAmt, DepositAmt, BalanceAmt, isFraud, user_behaviour, RiskLevel) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                        (account_no, date, TransactionDetails, ChqNo, valueDate, WithdrawalAmt, DepositAmt, BalanceAmt, isFraud, "null", risk_level))
                 connection.commit()  # Commit the transaction
 
                 return {
-                "Account_No": account_no,
-                "DATE": date,
-                "TRANSACTION DETAILS": TransactionDetails,
-                "CHQ_NO": ChqNo,
-                "VALUE DATE": valueDate,
-                "WITHDRAWAL_AMT": WithdrawalAmt,
-                "DEPOSIT_AMT": DepositAmt,
-                "BALANCE_AMT": BalanceAmt,
-                "isFraud": isFraud,
-            }, 200
+                    "Account_No": account_no,
+                    "DATE": date,
+                    "TRANSACTION DETAILS": TransactionDetails,
+                    "CHQ_NO": ChqNo,
+                    "VALUE DATE": valueDate,
+                    "WITHDRAWAL_AMT": WithdrawalAmt,
+                    "DEPOSIT_AMT": DepositAmt,
+                    "BALANCE_AMT": BalanceAmt,
+                    "isFraud": isFraud,
+                    "riskLevel": risk_level,
+                }, 200
             except Exception as e:
-                print(f"Error: {str(e)}")
+                # print(f"Error: {str(e)}")
                 return jsonify({'Error': str(e)}), 500
             
             
         except Exception as e:
             connection.rollback()  # Rollback the transaction in case of an error
-            print(f"Error: {str(e)}")
+            # print(f"Error: {str(e)}")
             return jsonify({'Error': str(e)}), 500
             
+    except Exception as e:
+        return jsonify({'Error': str(e)}), 500
+    
+@app.route('/transaction/list', methods=['GET'])
+def list_transactions():
+    try:
+        account_no = request.args.get('account_no')
+        if not account_no:
+            return jsonify({'error': 'Missing account_no parameter'}), 400
+
+        # Connect to the database
+        connection = connect_to_sql_server()
+        cursor = connection.cursor()
+
+        # Fetch the last 50 transactions for the specified account_no
+        cursor.execute("SELECT TOP 50 * FROM Transactions WHERE AccountNo = 409000611074 ORDER BY Date ASC", (account_no,))
+        transactions = cursor.fetchall()
+
+        if not transactions:
+            return jsonify({'error': 'No transactions found for the specified account_no'}), 404
+
+        # Define a list to store the transaction data
+        transaction_list = []
+        for row in transactions:
+            transaction_data = {
+                "Account_No": row[1],
+                "DATE": row[2],
+                "TRANSACTION DETAILS": row[3],
+                "CHQ_NO": row[4],
+                "VALUE DATE": row[5],
+                "WITHDRAWAL_AMT": row[6],
+                "DEPOSIT_AMT": row[7],
+                "BALANCE_AMT": row[8],
+                "isFraud": row[9],
+                "riskLevel": row[11]
+            }
+            transaction_list.append(transaction_data)
+
+        return jsonify(transaction_list), 200
+
     except Exception as e:
         return jsonify({'Error': str(e)}), 500
 
@@ -326,13 +379,13 @@ def populateUsers():
             clientId = 1
 
         for record in data:
-            print(record)
-            print(record["account_number"])
-            print(int(record["risk-value"]))
+            # print(record)
+            # print(record["account_number"])
+            # print(int(record["risk-value"]))
 
             cursor.execute("INSERT INTO Users (AccountNumber, UserId, Name, DateOfBirth, address, nic, passport, DrivingLicense, RiskScore, RiskValue, FaceImagePath, ClientId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (
                 record["account_number"], record["user_id"], record["name"], record["dob"], record["address"], record["docs"]["nic"], record["docs"]["passport"], record["docs"]["driving_license"], int(record["risk-score"]), int(record["risk-value"]), record["face_image_path"], clientId))
-            print(cursor.rowcount)
+            # print(cursor.rowcount)
         return jsonify({'Message': 'Users Created'}), 200
 
     except Exception as e:
@@ -389,7 +442,7 @@ def set_integrations():
     data = json.loads(request.data, strict=False)
     Id = data['apiKey']
     name= data['IntegrationName']
-    print(name)
+    # print(name)
     userId = data['clientId']
     status = 'Active'
     apiKey = data['apiKey']
@@ -410,7 +463,7 @@ def set_integrations():
             connection.commit()  
         except Exception as e:
             connection.rollback() 
-            print(f"Error: {str(e)}")
+            # print(f"Error: {str(e)}")
             return jsonify({'Error': str(e)}), 500
     
         return jsonify({'Message': 'Published'}), 200
@@ -441,13 +494,13 @@ def apiservice():
             input = configJson['input']
             output = configJson['output']
             nodes = configJson['nodes']
-            print(input)
-            print(output)
-            print(nodes)
+            # print(input)
+            # print(output)
+            # print(nodes)
             results = []
 
             if(input['type'] == 'JSON'):
-                print('Is JSON')
+                # print('Is JSON')
                 integration = nodes[0]
                 name = integration['name']
                 if(name == 'UserBehaviorAnalysis'):
@@ -470,7 +523,7 @@ def apiservice():
 
         except Exception as e:
             connection.rollback() 
-            print(f"Error: {str(e)}")
+            # print(f"Error: {str(e)}")
             return jsonify({'Error': str(e), 'Result': 'The API ran into an Error!'}), 500
     
         return jsonify({'Message': 'Success', 'config': configJson}), 200
