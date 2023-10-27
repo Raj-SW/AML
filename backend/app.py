@@ -1,6 +1,7 @@
 import json
 from flask import Flask, jsonify, make_response, request, render_template, session, flash
 import pyodbc
+from models.decision_tree import decision_tree
 # from models.predict_user_behaviour import *
 # from API.Test.test import sayHelloWorld
 from models.predicitveAINew import *
@@ -85,7 +86,7 @@ def get_integration(api_key):
 
         # Select a specific integration by ID
         cursor.execute("SELECT config FROM UserIntegration WHERE Id =?", api_key)
-        result = cursor.fetchone()
+        result = cursor.fetchall()
             # print(result)
         connection.commit()
         config = result[0]  # Assuming config is the first column in the result
@@ -458,6 +459,10 @@ def apiservice():
                 if(name == "AMLTransactionMonitoring"):
                     result.append({
                         "AMLTransactionMonitoring": fraud_detection("h5_data.json", "fraud_detection_model.h5")
+                    })
+                if(name == "FraudulentClassfication"):
+                    result.append({
+                        "FraudulentClassfication": decision_tree(connection)
                     })
                 
                 return results, 200
